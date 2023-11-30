@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 from pytube import YouTube
 from moviepy.editor import VideoFileClip
 from shutil import move, rmtree
@@ -20,7 +21,7 @@ def download_video(url, output_path):
         video_stream.download(output_path, video_file)
 
         print(f"Downloaded video as MP4: {video_file}")
-        time.sleep(2.4)  # Opóźnienie na potrzeby obserwacji
+        time.sleep(2)
 
         return video_file
 
@@ -40,7 +41,7 @@ def convert_to_mp3(video_file, output_path):
         clip.close()
 
         print(f"Converted video to MP3: {mp3_file}")
-        time.sleep(2.4)  # Opóźnienie na potrzeby obserwacji
+        time.sleep(2)
 
         return mp3_file
 
@@ -58,7 +59,7 @@ def move_to_downloads(mp3_file):
         move(mp3_file, downloads_mp3_file)
 
         print(f"Moved MP3 file to Downloads: {downloads_mp3_file}")
-        time.sleep(2.4)  # Opóźnienie na potrzeby obserwacji
+        time.sleep(2)
 
     except Exception as e:
         print(f"An error occurred during file move: {e}")
@@ -72,24 +73,36 @@ def cleanup(output_path, mp3_file):
         rmtree(output_path)
 
         print("Cleanup done: Removed MP4 and output folder.")
-        time.sleep(2.4)  # Opóźnienie na potrzeby obserwacji
+        time.sleep(2)
 
     except Exception as e:
         print(f"An error occurred during cleanup: {e}")
 
 
 if __name__ == "__main__":
-    # Set the path to the folder where files will be saved
-    output_folder = os.path.join(os.path.dirname(__file__), "output")
+    while True:
+        if getattr(sys, 'frozen', False):
+            # Executable (.exe)
+            script_directory = os.path.dirname(sys.executable)
+        else:
+            # Script (.py)
+            script_directory = os.path.dirname(os.path.abspath(__file__))
 
-    # Input YouTube URL
-    youtube_url = input("Enter the YouTube URL: ")
+        output_folder = os.path.join(script_directory, "output")
 
-    # Download and convert video
-    video_file = download_video(youtube_url, output_folder)
+        # Input YouTube URL
+        youtube_url = input("Enter the YouTube URL (or press Enter to exit): ")
 
-    if video_file:
-        mp3_file = convert_to_mp3(video_file, output_folder)
-        if mp3_file:
-            move_to_downloads(mp3_file)
-            cleanup(output_folder, mp3_file)
+        if not youtube_url:
+            break
+
+        # Download and convert video
+        video_file = download_video(youtube_url, output_folder)
+
+        if video_file:
+            mp3_file = convert_to_mp3(video_file, output_folder)
+            if mp3_file:
+                move_to_downloads(mp3_file)
+                cleanup(output_folder, mp3_file)
+
+    print("Exiting the program.")
