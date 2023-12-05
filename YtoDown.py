@@ -10,6 +10,12 @@ def download_video(url, output_path):
     try:
         # Download the YouTube video as an MP4 file
         youtube = YouTube(url)
+
+        # Check if the video is age restricted
+        if youtube.age_restricted:
+            print("This video is age restricted. Please log in to download.")
+            return None
+
         video_stream = youtube.streams.filter(file_extension='mp4').first()
 
         # Check if the output directory exists, if not, create it
@@ -21,7 +27,7 @@ def download_video(url, output_path):
         video_stream.download(output_path, video_file)
 
         print(f"Downloaded video as MP4: {video_file}")
-        time.sleep(2)
+        time.sleep(2)  # Opóźnienie na potrzeby obserwacji
 
         return video_file
 
@@ -41,7 +47,7 @@ def convert_to_mp3(video_file, output_path):
         clip.close()
 
         print(f"Converted video to MP3: {mp3_file}")
-        time.sleep(2)
+        time.sleep(2)  # Opóźnienie na potrzeby obserwacji
 
         return mp3_file
 
@@ -59,7 +65,7 @@ def move_to_downloads(mp3_file):
         move(mp3_file, downloads_mp3_file)
 
         print(f"Moved MP3 file to Downloads: {downloads_mp3_file}")
-        time.sleep(2)
+        time.sleep(2)  # Opóźnienie na potrzeby obserwacji
 
     except Exception as e:
         print(f"An error occurred during file move: {e}")
@@ -73,7 +79,7 @@ def cleanup(output_path, mp3_file):
         rmtree(output_path)
 
         print("Cleanup done: Removed MP4 and output folder.")
-        time.sleep(2)
+        time.sleep(2)  # Opóźnienie na potrzeby obserwacji
 
     except Exception as e:
         print(f"An error occurred during cleanup: {e}")
