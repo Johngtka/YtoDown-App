@@ -22,8 +22,12 @@ def download_video(url, output_path):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
 
+        # Replace invalid characters in the video title
+        video_title = "".join(c if c.isalnum() or c in [
+                              ' ', '.', '-', '_'] else '_' for c in video_stream.title)
+
         # Download video as an MP4 file
-        video_file = os.path.join(output_path, f"{video_stream.title}.mp4")
+        video_file = os.path.join(output_path, f"{video_title}.mp4")
         video_stream.download(output_path, video_file)
 
         print(f"Downloaded video as MP4: {video_file}")
