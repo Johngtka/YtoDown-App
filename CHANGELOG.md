@@ -1,5 +1,14 @@
 <!-- @format -->
 
+### [1.6.0]() (2023-12-17)
+
+### Features
+
+-   feat: added info for youtube age restricted
+    ([6534850](https://github.com/Johngtka/YtoDown-App/commit/6534850187ac99f544e13357e8e4383e1ba0cc08))
+-   feat: added support for invalid characters
+    ([03a7c3a](https://github.com/Johngtka/YtoDown-App/commit/03a7c3a6ae5d611432247192b825329757b3914b))
+
 ### 1.0.0 (2023-11-30)
 
 ### Feaatures
