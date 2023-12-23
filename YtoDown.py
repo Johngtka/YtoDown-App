@@ -13,7 +13,7 @@ def print_with_spacing(message):
 
 
 def loading_animation():
-    for _ in range(5):
+    for _ in range(6):
         sys.stdout.write("\rProcessing, Please wait.   ")
         time.sleep(0.2)
         sys.stdout.write("\rProcessing, Please wait..  ")
