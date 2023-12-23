@@ -2,9 +2,8 @@ import os
 import sys
 import time
 from pytube import YouTube
-from moviepy.editor import VideoFileClip
 from shutil import move, rmtree
-
+from moviepy.editor import VideoFileClip
 
 SLEEP_DURATION = 2
 
@@ -15,13 +14,11 @@ def print_with_spacing(message):
 
 def loading_animation():
     for _ in range(5):
-        sys.stdout.write("\rProcessing... Please wait.   ")
+        sys.stdout.write("\rProcessing, Please wait.   ")
         time.sleep(0.2)
-        sys.stdout.write("\rProcessing... Please wait..  ")
+        sys.stdout.write("\rProcessing, Please wait..  ")
         time.sleep(0.2)
-        sys.stdout.write("\rProcessing... Please wait... ")
-        time.sleep(0.2)
-        sys.stdout.write("\rProcessing... Please wait....")
+        sys.stdout.write("\rProcessing, Please wait... ")
         time.sleep(0.2)
     sys.stdout.write("\r")
 
