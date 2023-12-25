@@ -187,7 +187,7 @@ def main():
             print_with_spacing("Zamykanie programu.")
             break
 
-        options = ["Pobierz i skonwertuj do MP3", "Zamknij"]
+        options = ["Pobierz i skonwertuj do MP3", "Powrót"]
         selected_option = user_choice_menu(options)
 
         if selected_option == 0:
