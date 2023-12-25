@@ -34,10 +34,10 @@ def download_video(url, output_path):
 
         if youtube.age_restricted:
             print_with_spacing(
-                "This video is age restricted. Please log in to download.")
+                "To wideo jest ograniczone wiekowo. Zaloguj się, aby pobrać.")
             return None
 
-        video_stream = youtube.streams.filter(file_extension='mp4').first()
+        video_stream = youtube.streams.get_highest_resolution()
 
         if not os.path.exists(output_path):
             os.makedirs(output_path)
@@ -49,20 +49,27 @@ def download_video(url, output_path):
         video_stream.download(output_path, video_file)
 
         print_with_spacing(
-            f"{Fore.GREEN}Downloaded video as MP4: {video_file}")
+            f"Pobrano wideo: {video_file}")
         time.sleep(SLEEP_DURATION)
+
+        mp3_file = convert_to_mp3(video_file, output_path)
+        if mp3_file:
+            move_to_downloads(mp3_file)
+            cleanup(output_path, mp3_file)
+            clear_screen()
+            main()
+            clear_screen()
 
         return video_file
 
     except Exception as e:
-        print_with_spacing(
-            f"{Fore.RED}An error occurred during video download: {e}")
+        print_with_spacing(f"Wystąpił błąd podczas pobierania wideo: {e}")
         return None
 
 
 def convert_to_mp3(video_file, output_path):
     try:
-        print_with_spacing(f"{Fore.YELLOW}Converting to MP3...")
+        print_with_spacing(f"{Fore.YELLOW}Konwertowanie do MP3...")
         loading_animation()
 
         mp4_file_renamed = os.path.join(output_path, f"{os.path.splitext(
@@ -75,7 +82,8 @@ def convert_to_mp3(video_file, output_path):
         clip.audio.write_audiofile(mp3_file)
         clip.close()
 
-        print_with_spacing(f"{Fore.GREEN}Converted video to MP3: {mp3_file}")
+        print_with_spacing(
+            f"{Fore.GREEN}Skonwertowano wideo do MP3: {mp3_file}")
         time.sleep(SLEEP_DURATION)
 
         os.remove(mp4_file_renamed)
@@ -84,42 +92,43 @@ def convert_to_mp3(video_file, output_path):
 
     except Exception as e:
         print_with_spacing(
-            f"{Fore.RED}An error occurred during MP3 conversion: {e}")
+            f"{Fore.RED}Wystąpił błąd podczas konwertowania do MP3: {e}")
         return None
 
 
-def move_to_downloads(mp3_file):
+def move_to_downloads(file_path):
     try:
         downloads_path = os.path.join(os.path.expanduser("~"), "Downloads")
-        downloads_mp3_file = os.path.join(
-            downloads_path, os.path.basename(mp3_file))
-        move(mp3_file, downloads_mp3_file)
+        downloads_file = os.path.join(
+            downloads_path, os.path.basename(file_path))
+        move(file_path, downloads_file)
 
-        print_with_spacing(f"{Fore.GREEN}Moved MP3 file to Downloads: {
-                           downloads_mp3_file}")
+        print_with_spacing(
+            f"{Fore.GREEN}Przeniesiono plik do folderu Pobrane: {downloads_file}")
         time.sleep(SLEEP_DURATION)
 
     except Exception as e:
         print_with_spacing(
-            f"{Fore.RED}An error occurred during file move: {e}")
+            f"{Fore.RED}Wystąpił błąd podczas przenoszenia pliku: {e}")
 
 
-def cleanup(output_path, mp3_file):
+def cleanup(output_path, file_path):
     try:
-        mp4_file_path = os.path.join(output_path, f"{os.path.splitext(
-            os.path.basename(mp3_file))[0]}_original.mp4")
+        original_file_path = os.path.join(
+            output_path, os.path.basename(file_path))
 
-        if os.path.exists(mp4_file_path):
-            os.remove(mp4_file_path)
+        if os.path.exists(original_file_path):
+            os.remove(original_file_path)
 
         rmtree(output_path)
 
         print_with_spacing(
-            f"{Fore.GREEN}Cleanup done: Removed original MP4 and output folder.")
+            f"{Fore.GREEN}Przeczyszczono: Usunięto oryginalny plik i folder wynikowy.")
         time.sleep(SLEEP_DURATION)
 
     except Exception as e:
-        print_with_spacing(f"{Fore.RED}An error occurred during cleanup: {e}")
+        print_with_spacing(
+            f"{Fore.RED}Wystąpił błąd podczas czyszczenia: {e}")
 
 
 def clear_screen():
@@ -129,7 +138,7 @@ def clear_screen():
 
 def print_menu(options, selected_option):
     clear_screen()
-    print("\nOptions:")
+    print("\nOpcje:")
     for i, option in enumerate(options):
         if i == selected_option:
             print(f"{Fore.CYAN} [*] {option}")
@@ -142,59 +151,42 @@ def user_choice_menu(options):
 
     while True:
         time.sleep(0.1)
+
         print_menu(options, selected_option)
 
         if keyboard.is_pressed('down'):
             selected_option = (selected_option + 1) % len(options)
-            time.sleep(0.2)  # delay to avoid fast scrolling
         elif keyboard.is_pressed('up'):
             selected_option = (selected_option - 1) % len(options)
-            time.sleep(0.2)  # delay to avoid fast scrolling
 
         if keyboard.is_pressed('enter'):
+            print(f"{Fore.GREEN}Wybrana opcja: {options[selected_option]}")
             return selected_option
 
 
-if __name__ == "__main__":
-    while True:
-        script_directory = os.path.dirname(sys.executable) if getattr(
-            sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
-        output_folder = os.path.join(script_directory, "output")
+def main():
+    script_directory = os.path.dirname(sys.executable) if getattr(
+        sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
+    output_folder = os.path.join(script_directory, "output")
 
+    while True:
         youtube_url = input(
-            "\nEnter the YouTube URL (or press Enter to exit): ")
+            "\nPodaj URL filmu na YouTube (lub naciśnij Enter, aby zakończyć): ")
 
         if not youtube_url:
+            print_with_spacing("Zamykanie programu.")
             break
 
-        options = [
-            "Download and Convert to MP3",
-            "Download Only (MP4)",
-            "Skip and Continue",
-            "Exit"
-        ]
-
+        options = ["Pobierz i skonwertuj do MP3", "Zamknij"]
         selected_option = user_choice_menu(options)
 
-        if selected_option == 3:  # Exit
-            break
-        elif selected_option == 2:  # Skip and Continue
-            print_with_spacing(f"{Fore.YELLOW}Skipping and continuing...")
-            time.sleep(SLEEP_DURATION)
-            continue
+        if selected_option == 0:
+            download_video(youtube_url, output_folder)
 
-        loading_animation()
+        elif selected_option == 1:
+            print_with_spacing("Restartowanie programu...")
+            main()
 
-        video_file = download_video(youtube_url, output_folder)
 
-        if video_file:
-            if selected_option == 0:  # Download and Convert to MP3
-                mp3_file = convert_to_mp3(video_file, output_folder)
-                if mp3_file:
-                    move_to_downloads(mp3_file)
-                    cleanup(output_folder, mp3_file)
-            elif selected_option == 1:  # Download Only (MP4)
-                move_to_downloads(video_file)
-                cleanup(output_folder, video_file)
-
-    print_with_spacing("Exiting the program.")
+if __name__ == "__main__":
+    main()
