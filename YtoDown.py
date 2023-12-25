@@ -17,14 +17,23 @@ def print_with_spacing(message):
     print(f"\n{message}\n")
 
 
-def loading_animation():
-    for _ in range(6):
-        sys.stdout.write("\rProcessing, Please wait.   ")
-        time.sleep(0.2)
-        sys.stdout.write("\rProcessing, Please wait..  ")
-        time.sleep(0.2)
-        sys.stdout.write("\rProcessing, Please wait... ")
-        time.sleep(0.2)
+def loading_animation(processTag=True):
+    if processTag:
+        for _ in range(6):
+            sys.stdout.write("\rProcessing, Please wait.   ")
+            time.sleep(0.2)
+            sys.stdout.write("\rProcessing, Please wait..  ")
+            time.sleep(0.2)
+            sys.stdout.write("\rProcessing, Please wait... ")
+            time.sleep(0.2)
+    else:
+        for _ in range(6):
+            sys.stdout.write("\rRestarting, Please wait.   ")
+            time.sleep(0.2)
+            sys.stdout.write("\rRestarting, Please wait..  ")
+            time.sleep(0.2)
+            sys.stdout.write("\rRestarting, Please wait... ")
+            time.sleep(0.2)
     sys.stdout.write("\r")
 
 
@@ -56,6 +65,7 @@ def download_video(url, output_path):
         if mp3_file:
             move_to_downloads(mp3_file)
             cleanup(output_path, mp3_file)
+            loading_animation(processTag=False)
             clear_screen()
             main()
             clear_screen()
@@ -70,7 +80,7 @@ def download_video(url, output_path):
 def convert_to_mp3(video_file, output_path):
     try:
         print_with_spacing(f"{Fore.YELLOW}Konwertowanie do MP3...")
-        loading_animation()
+        loading_animation(processTag=True)
 
         mp4_file_renamed = os.path.join(output_path, f"{os.path.splitext(
             os.path.basename(video_file))[0]}_original.mp4")
@@ -181,11 +191,13 @@ def main():
         selected_option = user_choice_menu(options)
 
         if selected_option == 0:
+            loading_animation(processTag=True)
             download_video(youtube_url, output_folder)
 
         elif selected_option == 1:
-            print_with_spacing("Restartowanie programu...")
+            loading_animation(processTag=False)
             main()
+            clear_screen()
 
 
 if __name__ == "__main__":
