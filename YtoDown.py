@@ -9,8 +9,41 @@ from colorama import Fore, init
 
 SLEEP_DURATION = 2
 
-# Inicjalizacja colorama
+# Colorama initialization
 init(autoreset=True)
+
+
+def clear_screen():
+    if os.name == 'nt':
+        os.system('cls')
+
+
+def print_menu(options, selected_option):
+    clear_screen()
+    print("\nOptions:")
+    for i, option in enumerate(options):
+        if i == selected_option:
+            print(f"{Fore.CYAN} [*] {option}")
+        else:
+            print(f"{Fore.WHITE} [ ] {option}")
+
+
+def user_choice_menu(options):
+    selected_option = 0
+
+    while True:
+        time.sleep(0.1)
+
+        print_menu(options, selected_option)
+
+        if keyboard.is_pressed('down'):
+            selected_option = (selected_option + 1) % len(options)
+        elif keyboard.is_pressed('up'):
+            selected_option = (selected_option - 1) % len(options)
+
+        if keyboard.is_pressed('enter'):
+            print(f"{Fore.GREEN}Selected option: {options[selected_option]}")
+            return selected_option
 
 
 def print_with_spacing(message):
@@ -37,13 +70,13 @@ def loading_animation(processTag=True):
     sys.stdout.write("\r")
 
 
-def download_video(url, output_path):
+def download_video_and_convert(url, output_path):
     try:
         youtube = YouTube(url)
 
         if youtube.age_restricted:
             print_with_spacing(
-                "To wideo jest ograniczone wiekowo. Zaloguj się, aby pobrać.")
+                "This video is age-restricted. Log in to download.")
             return None
 
         video_stream = youtube.streams.get_highest_resolution()
@@ -57,8 +90,7 @@ def download_video(url, output_path):
         video_file = os.path.join(output_path, f"{video_title}.mp4")
         video_stream.download(output_path, video_file)
 
-        print_with_spacing(
-            f"Pobrano wideo: {video_file}")
+        print_with_spacing(f"Downloaded video: {video_file}")
         time.sleep(SLEEP_DURATION)
 
         mp3_file = convert_to_mp3(video_file, output_path)
@@ -73,13 +105,14 @@ def download_video(url, output_path):
         return video_file
 
     except Exception as e:
-        print_with_spacing(f"Wystąpił błąd podczas pobierania wideo: {e}")
+        print_with_spacing(
+            f"An error occurred while downloading the video: {e}")
         return None
 
 
 def convert_to_mp3(video_file, output_path):
     try:
-        print_with_spacing(f"{Fore.YELLOW}Konwertowanie do MP3...")
+        print_with_spacing(f"{Fore.YELLOW}Converting to MP3...")
         loading_animation(processTag=True)
 
         mp4_file_renamed = os.path.join(output_path, f"{os.path.splitext(
@@ -92,8 +125,7 @@ def convert_to_mp3(video_file, output_path):
         clip.audio.write_audiofile(mp3_file)
         clip.close()
 
-        print_with_spacing(
-            f"{Fore.GREEN}Skonwertowano wideo do MP3: {mp3_file}")
+        print_with_spacing(f"{Fore.GREEN}Converted video to MP3: {mp3_file}")
         time.sleep(SLEEP_DURATION)
 
         os.remove(mp4_file_renamed)
@@ -102,7 +134,7 @@ def convert_to_mp3(video_file, output_path):
 
     except Exception as e:
         print_with_spacing(
-            f"{Fore.RED}Wystąpił błąd podczas konwertowania do MP3: {e}")
+            f"{Fore.RED}An error occurred while converting to MP3: {e}")
         return None
 
 
@@ -114,12 +146,12 @@ def move_to_downloads(file_path):
         move(file_path, downloads_file)
 
         print_with_spacing(
-            f"{Fore.GREEN}Przeniesiono plik do folderu Pobrane: {downloads_file}")
+            f"{Fore.GREEN}Moved file to Downloads: {downloads_file}")
         time.sleep(SLEEP_DURATION)
 
     except Exception as e:
         print_with_spacing(
-            f"{Fore.RED}Wystąpił błąd podczas przenoszenia pliku: {e}")
+            f"{Fore.RED}An error occurred while moving the file: {e}")
 
 
 def cleanup(output_path, file_path):
@@ -133,45 +165,11 @@ def cleanup(output_path, file_path):
         rmtree(output_path)
 
         print_with_spacing(
-            f"{Fore.GREEN}Przeczyszczono: Usunięto oryginalny plik i folder wynikowy.")
+            f"{Fore.GREEN}Cleaned up: Removed original file and output folder.")
         time.sleep(SLEEP_DURATION)
 
     except Exception as e:
-        print_with_spacing(
-            f"{Fore.RED}Wystąpił błąd podczas czyszczenia: {e}")
-
-
-def clear_screen():
-    if os.name == 'nt':
-        os.system('cls')
-
-
-def print_menu(options, selected_option):
-    clear_screen()
-    print("\nOpcje:")
-    for i, option in enumerate(options):
-        if i == selected_option:
-            print(f"{Fore.CYAN} [*] {option}")
-        else:
-            print(f"{Fore.WHITE} [ ] {option}")
-
-
-def user_choice_menu(options):
-    selected_option = 0
-
-    while True:
-        time.sleep(0.1)
-
-        print_menu(options, selected_option)
-
-        if keyboard.is_pressed('down'):
-            selected_option = (selected_option + 1) % len(options)
-        elif keyboard.is_pressed('up'):
-            selected_option = (selected_option - 1) % len(options)
-
-        if keyboard.is_pressed('enter'):
-            print(f"{Fore.GREEN}Wybrana opcja: {options[selected_option]}")
-            return selected_option
+        print_with_spacing(f"{Fore.RED}An error occurred during cleanup: {e}")
 
 
 def main():
@@ -181,18 +179,18 @@ def main():
 
     while True:
         youtube_url = input(
-            "\nPodaj URL filmu na YouTube (lub naciśnij Enter, aby zakończyć): ")
+            "\nEnter the YouTube video URL (or press Enter to exit): ")
 
         if not youtube_url:
-            print_with_spacing("Zamykanie programu.")
+            print_with_spacing("Closing the program.")
             break
 
-        options = ["Pobierz i skonwertuj do MP3", "Powrót"]
+        options = ["Download and convert to MP3", "Back"]
         selected_option = user_choice_menu(options)
 
         if selected_option == 0:
             loading_animation(processTag=True)
-            download_video(youtube_url, output_folder)
+            download_video_and_convert(youtube_url, output_folder)
 
         elif selected_option == 1:
             loading_animation(processTag=False)
