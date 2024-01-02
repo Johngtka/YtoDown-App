@@ -1,6 +1,6 @@
 <!-- @format -->
 
-### [3.5.0]() (2024-01-02)
+### [3.5.0](https://github.com/Johngtka/YtoDown-App/compare/v.1.6.0...v.3.5.0) (2024-01-02)
 
 ### Features
 
