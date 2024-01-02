@@ -23,7 +23,7 @@
 
 ### 1.0.0 (2023-11-30)
 
-### Feaatures
+### Features
 
 -   feat: added working correctly looping of app and running the programme
     anywhere on the computer
