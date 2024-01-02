@@ -1,5 +1,17 @@
 <!-- @format -->
 
+### [3.5.0]() (2024-01-02)
+
+### Features
+
+-   feat: new downloading video function and app refactor
+    ([#3](https://github.com/Johngtka/YtoDown-App/pull/3))
+-   feat: Major changes to program and features for better performance and
+    actions for the future
+    ([#2](https://github.com/Johngtka/YtoDown-App/pull/2))
+-   feat: App optimization and changes
+    ([#1](https://github.com/Johngtka/YtoDown-App/pull/1))
+
 ### [1.6.0](https://github.com/Johngtka/YtoDown-App/compare/v.1.0.0...v.1.6.0) (2023-12-17)
 
 ### Features
