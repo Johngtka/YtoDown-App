@@ -94,13 +94,12 @@ def download_video_and_convert(url, output_path):
         time.sleep(SLEEP_DURATION)
 
         mp3_file = convert_to_mp3(video_file, output_path)
-        if mp3_file:
-            move_to_downloads(mp3_file)
-            cleanup(output_path, mp3_file)
-            loading_animation(processTag=False)
-            clear_screen()
-            main()
-            clear_screen()
+        move_to_downloads(mp3_file)
+        cleanup(output_path, mp3_file)
+        loading_animation(processTag=False)
+        clear_screen()
+        main()
+        clear_screen()
 
         return video_file
 
@@ -116,7 +115,7 @@ def convert_to_mp3(video_file, output_path):
         loading_animation(processTag=True)
 
         mp4_file_renamed = os.path.join(output_path, f"{os.path.splitext(
-            os.path.basename(video_file))[0]}_original.mp4")
+            os.path.basename(video_file))[0]}.mp4")
         os.rename(video_file, mp4_file_renamed)
 
         mp3_file = os.path.join(
@@ -172,6 +171,42 @@ def cleanup(output_path, file_path):
         print_with_spacing(f"{Fore.RED}An error occurred during cleanup: {e}")
 
 
+def download_video_only(url, output_path):
+    try:
+        youtube = YouTube(url)
+
+        if youtube.age_restricted:
+            print_with_spacing(
+                "This video is age-restricted. Log in to download.")
+            return None
+
+        video_stream = youtube.streams.get_highest_resolution()
+
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+
+        video_title = "".join(c if c.isalnum() or c in [
+                              ' ', '.', '-', '_'] else '_' for c in video_stream.title)
+
+        video_file = os.path.join(output_path, f"{video_title}.mp4")
+        video_stream.download(output_path, video_file)
+
+        print_with_spacing(f"Downloaded video: {video_file}")
+        time.sleep(SLEEP_DURATION)
+
+        move_to_downloads(video_file)
+        cleanup(output_path, video_file)
+        loading_animation(processTag=False)
+        clear_screen()
+        main()
+        clear_screen()
+
+    except Exception as e:
+        print_with_spacing(
+            f"An error occurred while downloading the video: {e}")
+        return None
+
+
 def main():
     script_directory = os.path.dirname(sys.executable) if getattr(
         sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
@@ -185,7 +220,7 @@ def main():
             print_with_spacing("Closing the program.")
             break
 
-        options = ["Download and convert to MP3", "Back"]
+        options = ["Download and convert to MP3", "Download Only MP4"]
         selected_option = user_choice_menu(options)
 
         if selected_option == 0:
@@ -193,9 +228,8 @@ def main():
             download_video_and_convert(youtube_url, output_folder)
 
         elif selected_option == 1:
-            loading_animation(processTag=False)
-            main()
-            clear_screen()
+            loading_animation(processTag=True)
+            download_video_only(youtube_url, output_folder)
 
 
 if __name__ == "__main__":
