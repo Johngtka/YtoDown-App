@@ -13,61 +13,40 @@ SLEEP_DURATION = 2
 init(autoreset=True)
 
 
-def clear_screen():
-    if os.name == 'nt':
-        os.system('cls')
+def download_video_only(url, output_path):
+    try:
+        youtube = YouTube(url)
 
+        if youtube.age_restricted:
+            print_with_spacing(
+                "This video is age-restricted. Log in to download.")
+            return None
 
-def print_menu(options, selected_option):
-    clear_screen()
-    print("\nOptions:")
-    for i, option in enumerate(options):
-        if i == selected_option:
-            print(f"{Fore.CYAN} [*] {option}")
-        else:
-            print(f"{Fore.WHITE} [ ] {option}")
+        video_stream = youtube.streams.get_highest_resolution()
 
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
 
-def user_choice_menu(options):
-    selected_option = 0
+        video_title = "".join(c if c.isalnum() or c in [
+                              ' ', '.', '-', '_'] else '_' for c in video_stream.title)
 
-    while True:
-        time.sleep(0.1)
+        video_file = os.path.join(output_path, f"{video_title}.mp4")
+        video_stream.download(output_path, video_file)
 
-        print_menu(options, selected_option)
+        print_with_spacing(f"Downloaded video: {video_file}")
+        time.sleep(SLEEP_DURATION)
 
-        if keyboard.is_pressed('down'):
-            selected_option = (selected_option + 1) % len(options)
-        elif keyboard.is_pressed('up'):
-            selected_option = (selected_option - 1) % len(options)
+        move_to_downloads(video_file)
+        cleanup(output_path, video_file)
+        loading_animation(processTag=False)
+        clear_screen()
+        main()
+        clear_screen()
 
-        if keyboard.is_pressed('enter'):
-            print(f"{Fore.GREEN}Selected option: {options[selected_option]}")
-            return selected_option
-
-
-def print_with_spacing(message):
-    print(f"\n{message}\n")
-
-
-def loading_animation(processTag=True):
-    if processTag:
-        for _ in range(6):
-            sys.stdout.write("\rProcessing, Please wait.   ")
-            time.sleep(0.2)
-            sys.stdout.write("\rProcessing, Please wait..  ")
-            time.sleep(0.2)
-            sys.stdout.write("\rProcessing, Please wait... ")
-            time.sleep(0.2)
-    else:
-        for _ in range(6):
-            sys.stdout.write("\rRestarting, Please wait.   ")
-            time.sleep(0.2)
-            sys.stdout.write("\rRestarting, Please wait..  ")
-            time.sleep(0.2)
-            sys.stdout.write("\rRestarting, Please wait... ")
-            time.sleep(0.2)
-    sys.stdout.write("\r")
+    except Exception as e:
+        print_with_spacing(
+            f"An error occurred while downloading the video: {e}")
+        return None
 
 
 def download_video_and_convert(url, output_path):
@@ -171,40 +150,61 @@ def cleanup(output_path, file_path):
         print_with_spacing(f"{Fore.RED}An error occurred during cleanup: {e}")
 
 
-def download_video_only(url, output_path):
-    try:
-        youtube = YouTube(url)
+def clear_screen():
+    if os.name == 'nt':
+        os.system('cls')
 
-        if youtube.age_restricted:
-            print_with_spacing(
-                "This video is age-restricted. Log in to download.")
-            return None
 
-        video_stream = youtube.streams.get_highest_resolution()
+def print_with_spacing(message):
+    print(f"\n{message}\n")
 
-        if not os.path.exists(output_path):
-            os.makedirs(output_path)
 
-        video_title = "".join(c if c.isalnum() or c in [
-                              ' ', '.', '-', '_'] else '_' for c in video_stream.title)
+def user_choice_menu(options):
+    selected_option = 0
 
-        video_file = os.path.join(output_path, f"{video_title}.mp4")
-        video_stream.download(output_path, video_file)
+    while True:
+        time.sleep(0.1)
 
-        print_with_spacing(f"Downloaded video: {video_file}")
-        time.sleep(SLEEP_DURATION)
+        print_menu(options, selected_option)
 
-        move_to_downloads(video_file)
-        cleanup(output_path, video_file)
-        loading_animation(processTag=False)
-        clear_screen()
-        main()
-        clear_screen()
+        if keyboard.is_pressed('down'):
+            selected_option = (selected_option + 1) % len(options)
+        elif keyboard.is_pressed('up'):
+            selected_option = (selected_option - 1) % len(options)
 
-    except Exception as e:
-        print_with_spacing(
-            f"An error occurred while downloading the video: {e}")
-        return None
+        if keyboard.is_pressed('enter'):
+            print(f"{Fore.GREEN}Selected option: {options[selected_option]}")
+            return selected_option
+
+
+def print_menu(options, selected_option):
+    clear_screen()
+    print("\nOptions:")
+    for i, option in enumerate(options):
+        if i == selected_option:
+            print(f"{Fore.CYAN} [*] {option}")
+        else:
+            print(f"{Fore.WHITE} [ ] {option}")
+
+
+def loading_animation(processTag=True):
+    if processTag:
+        for _ in range(6):
+            sys.stdout.write("\rProcessing, Please wait.   ")
+            time.sleep(0.2)
+            sys.stdout.write("\rProcessing, Please wait..  ")
+            time.sleep(0.2)
+            sys.stdout.write("\rProcessing, Please wait... ")
+            time.sleep(0.2)
+    else:
+        for _ in range(6):
+            sys.stdout.write("\rRestarting, Please wait.   ")
+            time.sleep(0.2)
+            sys.stdout.write("\rRestarting, Please wait..  ")
+            time.sleep(0.2)
+            sys.stdout.write("\rRestarting, Please wait... ")
+            time.sleep(0.2)
+    sys.stdout.write("\r")
 
 
 def main():
