@@ -19,7 +19,7 @@ def download_video_only(url, output_path):
 
         if youtube.age_restricted:
             print_with_spacing(
-                "This video is age-restricted. Log in to download.")
+                "This video is age-restricted")
             return None
 
         video_stream = youtube.streams.get_highest_resolution()
@@ -52,7 +52,7 @@ def download_video_and_convert(url, output_path):
 
         if youtube.age_restricted:
             print_with_spacing(
-                "This video is age-restricted. Log in to download.")
+                "This video is age-restricted.")
             return None
 
         video_stream = youtube.streams.get_highest_resolution()
@@ -208,13 +208,13 @@ def main():
         youtube_url = input(
             "\nEnter the YouTube video URL (or press Enter to exit): ")
 
-        if not youtube_url:
-            print_with_spacing("Closing the program.")
-            break
-
         options = ["Download and convert to MP3", "Download Only MP4"]
         time.sleep(0.5)
         selected_option = user_choice_menu(options)
+
+        if not youtube_url:
+            print_with_spacing("Closing the program.")
+            break
 
         if selected_option == 0:
             loading_animation(processTag=True)
