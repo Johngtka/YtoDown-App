@@ -2,7 +2,7 @@
 
 ### [4.5.0](https://github.com/Johngtka/YtoDown-App/compare/v.3.5.0...v.4.5.0) (2024-02-13)
 
--   fix: the behavior of the application and the general order have been fixed
+-   fix: the behavior of the application and the general code have been fixed
     ([#4](https://github.com/Johngtka/YtoDown-App/pull/4))
 
 ### [3.5.0](https://github.com/Johngtka/YtoDown-App/compare/v.1.6.0...v.3.5.0) (2024-01-02)
