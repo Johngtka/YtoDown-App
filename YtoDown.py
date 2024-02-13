@@ -1,11 +1,11 @@
 import os
 import sys
 import time
+import keyboard
 from pytube import YouTube
 from shutil import move, rmtree
-from moviepy.editor import VideoFileClip
-import keyboard
 from colorama import Fore, init
+from moviepy.editor import VideoFileClip
 
 SLEEP_DURATION = 2
 
