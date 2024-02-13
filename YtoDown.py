@@ -39,9 +39,6 @@ def download_video_only(url, output_path):
         move_to_downloads(video_file)
         cleanup(output_path, video_file)
         loading_animation(processTag=False)
-        clear_screen()
-        main()
-        clear_screen()
 
     except Exception as e:
         print_with_spacing(
@@ -76,11 +73,6 @@ def download_video_and_convert(url, output_path):
         move_to_downloads(mp3_file)
         cleanup(output_path, mp3_file)
         loading_animation(processTag=False)
-        clear_screen()
-        main()
-        clear_screen()
-
-        return video_file
 
     except Exception as e:
         print_with_spacing(
@@ -221,15 +213,20 @@ def main():
             break
 
         options = ["Download and convert to MP3", "Download Only MP4"]
+        time.sleep(0.5)
         selected_option = user_choice_menu(options)
 
         if selected_option == 0:
             loading_animation(processTag=True)
             download_video_and_convert(youtube_url, output_folder)
+            main()
+            clear_screen()
 
         elif selected_option == 1:
             loading_animation(processTag=True)
             download_video_only(youtube_url, output_folder)
+            main()
+            clear_screen()
 
 
 if __name__ == "__main__":
