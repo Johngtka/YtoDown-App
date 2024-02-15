@@ -9,7 +9,6 @@ from moviepy.editor import VideoFileClip
 
 SLEEP_DURATION = 2
 
-# Colorama initialization
 init(autoreset=True)
 
 
@@ -151,6 +150,16 @@ def print_with_spacing(message):
     print(f"\n{message}\n")
 
 
+def print_menu(options, selected_option):
+    clear_screen()
+    print("\nOptions:")
+    for i, option in enumerate(options):
+        if i == selected_option:
+            print(f"{Fore.CYAN} [*] {option}")
+        else:
+            print(f"{Fore.WHITE} [ ] {option}")
+
+
 def user_choice_menu(options):
     selected_option = 0
 
@@ -167,16 +176,6 @@ def user_choice_menu(options):
         if keyboard.is_pressed('enter'):
             print(f"{Fore.GREEN}Selected option: {options[selected_option]}")
             return selected_option
-
-
-def print_menu(options, selected_option):
-    clear_screen()
-    print("\nOptions:")
-    for i, option in enumerate(options):
-        if i == selected_option:
-            print(f"{Fore.CYAN} [*] {option}")
-        else:
-            print(f"{Fore.WHITE} [ ] {option}")
 
 
 def loading_animation(processTag=True):
